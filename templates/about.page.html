@@ -1,0 +1,8 @@
+{{template "base" .}}
+
+{{define "content"}}
+<h1>Welcome to about page</h1>
+<h2>New line for about page</h2>
+<h2>This comes from the themplate: {{index .StringMap "test"}}</h2>
+<h2>This comes from the themplate: {{index .StringMap "test2"}}</h2>
+{{end}}
