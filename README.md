@@ -1,1 +1,1 @@
-# Go-server
+# Simple go application
