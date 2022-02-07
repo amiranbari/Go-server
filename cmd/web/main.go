@@ -4,9 +4,10 @@ import (
 	// "errors"
 	"fmt"
 	"log"
-	"server/pkg/config"
-	"server/pkg/handlers"
-	"server/pkg/renders"
+
+	"github.com/amiranbari/Go-server/pkg/config"
+	"github.com/amiranbari/Go-server/pkg/handlers"
+	"github.com/amiranbari/Go-server/pkg/renders"
 
 	// "math/rand"
 	"net/http"
