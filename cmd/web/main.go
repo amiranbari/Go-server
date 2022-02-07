@@ -4,9 +4,12 @@ import (
 	// "errors"
 	"fmt"
 	"log"
-	"server/pkg/config"
-	"server/pkg/handlers"
-	"server/pkg/renders"
+	"time"
+
+	"github.com/alexedwards/scs/v2"
+	"github.com/amiranbari/Go-server/pkg/config"
+	"github.com/amiranbari/Go-server/pkg/handlers"
+	"github.com/amiranbari/Go-server/pkg/renders"
 
 	// "math/rand"
 	"net/http"
@@ -45,9 +48,20 @@ const portNumber string = ":8000"
 // 	return x + y
 // }
 
-func main() {
+var app config.AppConfig
+var session *scs.SessionManager
 
-	var app config.AppConfig
+func main() {
+	// change this to true in production
+	app.InProduction = false
+
+	session = scs.New()
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = app.InProduction
+
+	app.Session = session
 
 	tc, err := renders.CreateTemplateCache()
 	if err != nil {
@@ -55,20 +69,28 @@ func main() {
 	}
 
 	app.TemplateCache = tc
-	app.UseCache = true
+	app.UseCache = false
 
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
 
 	renders.NewTemplates(&app)
 
-	http.HandleFunc("/", handlers.Repo.Home)
-
-	http.HandleFunc("/about", handlers.Repo.About)
+	// http.HandleFunc("/", handlers.Repo.Home)
+	// http.HandleFunc("/about", handlers.Repo.About)
 
 	// http.HandleFunc("/devide", devide)
 
 	fmt.Println(fmt.Sprintf("starting application on port number %s", portNumber))
 
-	_ = http.ListenAndServe(portNumber, nil)
+	// _ = http.ListenAndServe(portNumber, nil)
+
+	srv := &http.Server{
+		Addr:    portNumber,
+		Handler: route(&app),
+	}
+
+	err = srv.ListenAndServe()
+
+	log.Fatal(err)
 }
